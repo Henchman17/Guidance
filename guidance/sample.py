@@ -1,13 +1,13 @@
-import sys
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QTableWidget, QTableWidgetItem, QFrame, QListWidget,
     QLineEdit, QCalendarWidget, QDialog, QFormLayout, QDialogButtonBox
 )
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import sys
 
 
 # Login Dialog
@@ -118,6 +118,21 @@ class Dashboard(QMainWindow):
 
         layout.addWidget(welcome)
         layout.addStretch()
+
+        # Profile Picture
+        profile_pic = QLabel()
+        pixmap = QPixmap(40, 40)  # Create a placeholder for the profile picture
+        pixmap.fill(Qt.gray)  # Fill with gray color for placeholder
+        profile_pic.setPixmap(pixmap)
+        profile_pic.setFixedSize(40, 40)
+        layout.addWidget(profile_pic)
+
+        # Sign Out Button
+        sign_out_button = QPushButton("Sign Out")
+        sign_out_button.setStyleSheet("background-color: #e74c3c; color: white;")
+        sign_out_button.clicked.connect(self.sign_out)
+        layout.addWidget(sign_out_button)
+
 
         top_frame.setLayout(layout)
         return top_frame
@@ -272,6 +287,9 @@ class Dashboard(QMainWindow):
             child = layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+
+    def sign_out(self):
+        self.close()  # Close the dashboard
 
 
 def main():
