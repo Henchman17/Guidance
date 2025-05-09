@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QTableWidget, QTableWidgetItem, QFrame, QListWidget,
-    QLineEdit, QCalendarWidget, QDialog, QFormLayout, QDialogButtonBox
+    QLineEdit, QCalendarWidget, QDialog, QFormLayout, QDialogButtonBox,
+    QMessageBox
 )
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtCore import Qt
@@ -289,22 +290,32 @@ class Dashboard(QMainWindow):
                 child.widget().deleteLater()
 
     def sign_out(self):
-        self.close()  # Close the dashboard
+        reply = QMessageBox.question(self, 'Confirm Sign Out', 
+                                    "Are you sure you want to sign out?", 
+                                    QMessageBox.Yes | QMessageBox.No, 
+                                    QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.close()  # Close the dashboard
 
 
 def main():
     app = QApplication(sys.argv)
-
-    login = LoginDialog()
-    if login.exec_() == QDialog.Accepted:
-        username, password = login.get_credentials()
-        if username == "admin" and password == "password":
-            dashboard = Dashboard(username)  # Pass username
-            dashboard.show()
-            sys.exit(app.exec_())
-        else:
-            print("Invalid credentials.")
-            sys.exit()
+    while True:
+            login = LoginDialog()
+            if login.exec_() == QDialog.Accepted:
+                username, password = login.get_credentials()
+                if username == "admin" and password == "password":
+                    dashboard = Dashboard(username)  # Pass username
+                    dashboard.show()
+                    sys.exit(app.exec_())
+                else:
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Warning)
+                    msg.setWindowTitle("Invalid Credentials")
+                    msg.setText("The username or password you entered is incorrect. Please try again.")
+                    msg.exec_()
+            else:
+                sys.exit()
 
 
 if __name__ == '__main__':
