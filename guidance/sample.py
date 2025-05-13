@@ -102,6 +102,8 @@ class Dashboard(QMainWindow):
 
         self.content_layout = QVBoxLayout()
         content_layout.addLayout(self.content_layout)
+        
+        self.showMaximized()
 
         self.build_dashboard()
 
@@ -296,6 +298,14 @@ class Dashboard(QMainWindow):
                                     QMessageBox.No)
         if reply == QMessageBox.Yes:
             self.close()  # Close the dashboard
+    
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_F11:
+            if self.isFullScreen():
+                self.showNormal()  # Exit full-screen
+            else:
+                self.showFullScreen()  # Enter full-screen
+
 
 
 def main():
