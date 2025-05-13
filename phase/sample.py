@@ -10,6 +10,67 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import sys
 
+# Registration Dialog
+class RegistrationDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Register Admin Account")
+        self.setFixedSize(350, 250)
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #f2f4f7;
+                border-radius: 10px;
+            }
+            QLabel {
+                font-size: 14px;
+            }
+            QLineEdit {
+                padding: 8px;
+                font-size: 14px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                padding: 8px;
+                font-size: 14px;
+                border: none;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+            QDialogButtonBox QPushButton {
+                min-width: 80px;
+            }
+        """)
+
+        layout = QVBoxLayout(self)
+
+        title = QLabel("Register Admin Account")
+        title.setFont(QFont("Arial", 16, QFont.Bold))
+        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title)
+
+        form_layout = QFormLayout()
+        self.username_input = QLineEdit()
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+
+        form_layout.addRow("Username:", self.username_input)
+        form_layout.addRow("Password:", self.password_input)
+
+        layout.addLayout(form_layout)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def get_credentials(self):
+        return self.username_input.text(), self.password_input.text()
+
 
 # Login Dialog
 class LoginDialog(QDialog):
@@ -69,8 +130,22 @@ class LoginDialog(QDialog):
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
+        # Add Register button
+        register_button = QPushButton("Register Admin Account")
+        register_button.clicked.connect(self.open_registration_dialog)
+        layout.addWidget(register_button)
+
+    def open_registration_dialog(self):
+        registration_dialog = RegistrationDialog()
+        if registration_dialog.exec_() == QDialog.Accepted:
+            username, password = registration_dialog.get_credentials()
+            # Here you would typically save the new admin account to a database or file
+            # For demonstration, we will just show a message box
+            QMessageBox.information(self , "Registration Successful", f"Admin account '{username}' has been registered successfully!")
+
     def get_credentials(self):
         return self.username_input.text(), self.password_input.text()
+
 
 
 
