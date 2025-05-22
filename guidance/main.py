@@ -28,7 +28,7 @@ class RegistrationDialog(QDialog):
         self.setFixedSize(350, 250)
         self.setStyleSheet("""
             QDialog {
-                background-color: #f2f4f7;
+                background-color: #e8f5e9;  /* Hyena Green */
                 border-radius: 10px;
             }
             QLabel {
@@ -41,7 +41,7 @@ class RegistrationDialog(QDialog):
                 border-radius: 5px;
             }
             QPushButton {
-                background-color: #4CAF50;
+                background-color: #4CAF50;  /* Hyena Green */
                 color: white;
                 padding: 8px;
                 font-size: 14px;
@@ -105,7 +105,7 @@ class LoginDialog(QDialog):
         self.setFixedSize(350, 200)
         self.setStyleSheet("""
             QDialog {
-                background-color: #f2f4f7;
+                background-color: #e8f5e9;  /* Hyena Green */
                 border-radius: 10px;
             }
             QLabel {
@@ -118,7 +118,7 @@ class LoginDialog(QDialog):
                 border-radius: 5px;
             }
             QPushButton {
-                background-color: #4CAF50;
+                background-color: #4CAF50;  /* Hyena Green */
                 color: white;
                 padding: 8px;
                 font-size: 14px;
@@ -189,6 +189,26 @@ class LoginDialog(QDialog):
         else:
             QMessageBox.warning(self, "Input Error", "Please enter both username and password.")
 
+# Form Dialog
+class FormDialog(QDialog):
+    def __init__(self, title):
+        super().__init__()
+        self.setWindowTitle(title)
+        self.setFixedSize(400, 300)
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #e8f5e9;  /* Hyena Green */
+                border-radius: 10px;
+            }
+            QLabel {
+                font-size: 16px;
+                font-weight: bold;
+                margin: 10px;
+            }
+        """)
+        layout = QVBoxLayout(self)
+        label = QLabel(f"{title} Form")
+        layout.addWidget(label)
 
 # Main Dashboard
 class Dashboard(QMainWindow):
@@ -223,7 +243,7 @@ class Dashboard(QMainWindow):
     def create_top_bar(self):
         top_frame = QFrame()
         top_frame.setFixedHeight(50)
-        top_frame.setStyleSheet("background-color: #2c3e50;")
+        top_frame.setStyleSheet("background-color: #4CAF50;")  # Hyena Green
 
         layout = QHBoxLayout()
         layout.setContentsMargins(10, 0, 10, 0)
@@ -234,6 +254,23 @@ class Dashboard(QMainWindow):
 
         layout.addWidget(welcome)
         layout.addStretch()
+
+        # Notification bell button
+        notification_bell = QPushButton("🔔")
+        notification_bell.setStyleSheet("""
+            QPushButton {
+                background-color: transparent;
+                color: white;
+                font-size: 20px;
+                border: none;
+            }
+            QPushButton:hover {
+                color: #c1e1c1;
+            }
+        """)
+        notification_bell.setCursor(Qt.PointingHandCursor)
+        notification_bell.clicked.connect(self.show_notifications)
+        layout.addWidget(notification_bell)
 
         profile_pic = QLabel()
         pixmap = QPixmap(40, 40)
@@ -250,6 +287,10 @@ class Dashboard(QMainWindow):
         top_frame.setLayout(layout)
         return top_frame
 
+    def show_notifications(self):
+        # Placeholder for notification messages
+        QMessageBox.information(self, "Notifications", "You have 3 new notifications.")
+
     def create_sidebar(self):
         sidebar = QListWidget()
         sidebar.setFixedWidth(200)
@@ -257,7 +298,7 @@ class Dashboard(QMainWindow):
             "📊 Dashboard",
             "🧑‍🎓 Student Records",
             "📝 Counseling Sessions",
-            "📌 Referrals",
+            "📌 Forms",
             "📅 Calendar",
             "📈 Reports",
             "⚙️ Settings"
@@ -270,7 +311,7 @@ class Dashboard(QMainWindow):
 
         header = QLabel("Dashboard")
         header.setFont(QFont("Arial", 20))
-        self.content_layout .addWidget(header)
+        self.content_layout.addWidget(header)
 
         search_layout = QHBoxLayout()
         self.search_box = QLineEdit()
@@ -284,6 +325,49 @@ class Dashboard(QMainWindow):
 
         self.table = self.create_sessions_table()
         self.content_layout.addWidget(self.table)
+
+    def show_forms(self):
+        self.clear_layout(self.content_layout)
+        header = QLabel("Forms")
+        header.setFont(QFont("Arial", 20))
+        self.content_layout.addWidget(header)
+
+        form_layout = QHBoxLayout()
+        form_names = [
+            "Good Moral and Re-Admission",
+            "Student Cumulative",
+            "Routine Interview",
+            "Psychological Exam",
+            "Exit Interview"
+        ]
+        for form_name in form_names:
+            card = self.create_form_card(form_name)
+            form_layout.addWidget(card)
+
+        self.content_layout.addLayout(form_layout)
+
+    def create_form_card(self, title):
+        button = QPushButton(title)
+        button.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;  /* Hyena Green */
+                color: white;
+                font-size: 16px;
+                border: none;
+                border-radius: 5px;
+                padding: 10px;
+                margin: 5px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+        """)
+        button.clicked.connect(lambda: self.open_form_dialog(title))
+        return button
+
+    def open_form_dialog(self, title):
+        form_dialog = FormDialog(title)
+        form_dialog.exec_()
 
     def show_calendar(self):
         self.clear_layout(self.content_layout)
@@ -309,6 +393,8 @@ class Dashboard(QMainWindow):
         view = current.text()
         if "Dashboard" in view:
             self.build_dashboard()
+        elif "Forms" in view:
+            self.show_forms()
         elif "Calendar" in view:
             self.show_calendar()
         elif "Reports" in view or "Charts" in view:
@@ -317,8 +403,6 @@ class Dashboard(QMainWindow):
             self.display_message("Student Records - Coming Soon")
         elif "Counseling Sessions" in view:
             self.display_message("Counseling Sessions - Coming Soon")
-        elif "Referrals" in view:
-            self.display_message("Referrals - Coming Soon")
         elif "Settings" in view:
             self.display_message("Settings - Coming Soon")
 
@@ -327,8 +411,7 @@ class Dashboard(QMainWindow):
         cards = [
             ("🧑‍🎓 Total Students", "525"),
             ("🧠 Active Cases", "42"),
-            ("📅 Upcoming Sessions", "12"),
-            ("📈 Referrals Made", "18"),
+            ("📅 Upcoming Sessions", "12")
         ]
         for title, count in cards:
             card = self.create_card(title, count)
